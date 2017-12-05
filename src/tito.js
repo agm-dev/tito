@@ -55,8 +55,100 @@ const tito = (function () {
     return true
   }
 
-  function process (text = '') {
-    return ''
+  /**
+   * Checks that input param is present and is a valid string
+   * or returns an error
+   * @param {*} input
+   * @returns {string} error
+   */
+  function checkProcessInput (input = null) {
+    if (typeof input !== 'string' || !input.length) return 'required string as input param'
+    return null
+  }
+
+  /**
+   *
+   * @param {*} text
+   */
+  function process (text) {
+    const error = checkProcessInput(text)
+    if (error) return [error, null]
+    let response = null
+    let matches = false
+    for (const i in rules) {
+      if (Array.isArray(rules[i].in)) {
+        for (const j in rules[i].in) {
+          matches = inRuleMatches(rules[i].in[j], text)
+          if (matches) {
+            response = getOutResponse(rules[i].out)
+            break
+          }
+        }
+        if (matches) break // this is for breaking the first loop just before breaking the nested loop
+      } else {
+        matches = inRuleMatches(rules[i].in, text)
+        if (matches) {
+          response = getOutResponse(rules[i].out)
+          break
+        }
+      }
+    }
+
+    return [error, response]
+  }
+
+  /**
+   *
+   * @param {*} inRule
+   */
+  function inRuleMatches (inRule, text) {
+    let matches = false
+    try {
+      matches = (new RegExp(inRule)).test(text)
+    } catch (err) {
+      log(err, 'warn')
+    }
+    return matches
+  }
+
+  /**
+   * Checks the type of out param and makes a choice
+   * @param {*} out
+   * @returns {string}
+   */
+  function getOutResponse (out) {
+    if (typeof out === 'string') return out
+    if (typeof out === 'object' && out.hasOwnProperty('text') && typeof out.text === 'string') return out.text
+    if (Array.isArray(out)) {
+      let probabilityPool = 100
+      const probabilityTable = []
+      const outWeight = out.filter(item => (typeof item.weight === 'number' && item.weight <= probabilityPool))
+      const outPlain = out.filter(item => (typeof item.weight !== 'number' || item.weight > probabilityPool))
+      for (let i = 0; i < outWeight.length; i++) {
+        const w = outWeight[i].weight
+        const range = 100 - probabilityPool + w
+        probabilityTable.push([range, outWeight[i].text])
+        probabilityPool -= w
+        if (probabilityPool <= 0) break
+      }
+      if (probabilityPool > 0) {
+        const linearProb = probabilityPool / outPlain.length
+        for (let i = 0; i < outPlain.length; i++) {
+          const range = 100 - probabilityPool + linearProb
+          const text = typeof outPlain === 'string' ? outPlain : outPlain.text
+          probabilityTable.push([range, text])
+          probabilityPool -= linearProb
+        }
+      }
+      log(JSON.stringify(probabilityTable), 'info')
+      // get response randomly using created table:
+      const random = Math.floor(Math.random() * 100) + 1 // random number 1-100
+      for (var i = 0; i < probabilityTable.length; i++) {
+        if (random <= probabilityTable[i][0]) {
+          return probabilityTable[i][1]
+        }
+      }
+    }
   }
 
   function getRules () {

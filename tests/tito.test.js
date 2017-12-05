@@ -71,3 +71,35 @@ test('initialize method returns false on invalid configuration', t => {
 test('initialize method returns true on valid configuration', t => {
   t.true(tito.initialize(testRules))
 })
+
+test('process method only accepts string with length as input param', t => {
+  let err, response
+  [err, response] = tito.process(123)
+  t.true(typeof err === 'string')
+  t.true(response === null);
+  [err, response] = tito.process([])
+  t.true(typeof err === 'string')
+  t.true(response === null);
+  [err, response] = tito.process('abc')
+  t.true(err === null)
+  t.true(response === null);
+  [err, response] = tito.process('')
+  t.true(typeof err === 'string')
+  t.true(response === null);
+  [err, response] = tito.process({})
+  t.true(typeof err === 'string')
+  t.true(response === null);
+  [err, response] = tito.process(null)
+  t.true(typeof err === 'string')
+  t.true(response === null);
+  [err, response] = tito.process()
+  t.true(typeof err === 'string')
+  t.true(response === null)
+})
+
+test('process method returns an array response on valid input', t => {
+  let err, response
+  [err, response] = tito.process('test')
+  t.true(err === null)
+  t.true(response === testRules[0].out)
+})
