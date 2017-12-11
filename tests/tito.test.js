@@ -38,6 +38,10 @@ test('tito has getOptions method', t => {
   t.true(typeof tito.getOptions === 'function')
 })
 
+test('tito has setOptions method', t => {
+  t.true(typeof tito.setOptions === 'function')
+})
+
 test('getRules returns an array of rules objects', t => {
   const rules = tito.getRules()
   t.is(Array.isArray(rules), true)
@@ -102,4 +106,24 @@ test('process method returns an array response on valid input', t => {
   [err, response] = tito.process('test')
   t.true(err === null)
   t.true(response === testRules[0].out)
+})
+
+test('getOptions returns and object with options data', t => {
+  const options = tito.getOptions()
+  t.is(options.responseFormat, 'array')
+})
+
+test('setOptions only accepts (return true) object with valid options as properties', t => {
+  t.false(tito.setOptions('test'))
+  t.false(tito.setOptions([]))
+  t.false(tito.setOptions(123))
+  t.true(tito.setOptions({}))
+  t.false(tito.setOptions({ test: 'test' }))
+  t.false(tito.setOptions({ responseFormat: null }))
+  t.false(tito.setOptions({ responseFormat: 123 }))
+  t.false(tito.setOptions({ responseFormat: {} }))
+  t.false(tito.setOptions({ responseFormat: [] }))
+  t.false(tito.setOptions({ responseFormat: 'test' }))
+  t.true(tito.setOptions({ responseFormat: 'array' }))
+  t.true(tito.setOptions({ responseFormat: 'object' }))
 })

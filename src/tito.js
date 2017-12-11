@@ -94,6 +94,7 @@ const tito = (function () {
       }
     }
 
+    // TODO: return response in format acoording to the options
     return [error, response]
   }
 
@@ -159,11 +160,35 @@ const tito = (function () {
     return { responseFormat }
   }
 
+  /**
+   * Set new options values
+   * @param {object} options
+   * @return {boolean}
+   */
+  function setOptions (options) {
+    if (typeof options !== 'object' || Array.isArray(options)) return false
+    const keys = Object.keys(options)
+    const validKeys = ['responseFormat']
+    const allKeysAreValid = keys.every(key => validKeys.includes(key))
+    if (!allKeysAreValid) return false
+    if (options.hasOwnProperty('responseFormat')) {
+      if (['array', 'object'].indexOf(options.responseFormat) !== -1) {
+        responseFormat = options.responseFormat
+        log(`set option responseFormat to ${options.responseFormat}`, 'log')
+      } else {
+        log(`set option reesponseFormat has to be 'array' or 'object'`, 'error')
+        return false
+      }
+    }
+    return true
+  }
+
   return {
     initialize,
     process,
     getRules,
-    getOptions
+    getOptions,
+    setOptions
   }
 })()
 
