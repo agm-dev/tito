@@ -111,6 +111,7 @@ test('process method returns an array response on valid input', t => {
 test('getOptions returns and object with options data', t => {
   const options = tito.getOptions()
   t.is(options.responseFormat, 'array')
+  t.is(options.caseSensitive, false)
 })
 
 test('setOptions only accepts (return true) object with valid options as properties', t => {
@@ -126,6 +127,11 @@ test('setOptions only accepts (return true) object with valid options as propert
   t.false(tito.setOptions({ responseFormat: 'test' }))
   t.true(tito.setOptions({ responseFormat: 'array' }))
   t.true(tito.setOptions({ responseFormat: 'object' }))
+  t.true(tito.setOptions({ caseSensitive: true }))
+  t.true(tito.setOptions({ caseSensitive: false }))
+  t.false(tito.setOptions({ caseSensitive: 'test' }))
+  t.false(tito.setOptions({ caseSensitive: [] }))
+  t.false(tito.setOptions({ caseSensitive: {} }))
 })
 
 test('process method returns an object response when responseFormat === "object"', t => {
@@ -135,4 +141,17 @@ test('process method returns an object response when responseFormat === "object"
   t.true(result.hasOwnProperty('response'))
   t.true(result.error === null)
   t.true(result.response === testRules[0].out)
+})
+
+test('by default process method is not case sensitive', t => {
+  const result = tito.process('TeSt')
+  t.true(result.response === testRules[0].out)
+})
+
+test('caseSensitive option works', t => {
+  const result = tito.process('TeSt')
+  t.true(result.response === testRules[0].out)
+  tito.setOptions({ caseSensitive: true })
+  const result2 = tito.process('TeSt')
+  t.false(result2.response === testRules[0].out)
 })

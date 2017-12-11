@@ -5,6 +5,7 @@ const tito = (function () {
   // Properties:
   let rules = []
   let responseFormat = 'array'
+  let caseSensitive = false
   let validLogLevels = ['log', 'warn', 'error']
 
   /**
@@ -120,8 +121,9 @@ const tito = (function () {
    */
   function inRuleMatches (inRule, text) {
     let matches = false
+    const options = caseSensitive ? 'mg' : 'img'
     try {
-      matches = (new RegExp(inRule)).test(text)
+      matches = (new RegExp(inRule, options)).test(text)
     } catch (err) {
       log(err, 'warn')
     }
@@ -181,7 +183,10 @@ const tito = (function () {
    * @return {object} options
    */
   function getOptions () {
-    return { responseFormat }
+    return {
+      responseFormat,
+      caseSensitive
+    }
   }
 
   /**
@@ -192,7 +197,7 @@ const tito = (function () {
   function setOptions (options) {
     if (typeof options !== 'object' || Array.isArray(options)) return false
     const keys = Object.keys(options)
-    const validKeys = ['responseFormat']
+    const validKeys = ['responseFormat', 'caseSensitive']
     const allKeysAreValid = keys.every(key => validKeys.includes(key))
     if (!allKeysAreValid) return false
     if (options.hasOwnProperty('responseFormat')) {
@@ -201,6 +206,15 @@ const tito = (function () {
         log(`set option responseFormat to ${options.responseFormat}`, 'log')
       } else {
         log(`set option reesponseFormat has to be 'array' or 'object'`, 'error')
+        return false
+      }
+    }
+    if (options.hasOwnProperty('caseSensitive')) {
+      if (typeof options.caseSensitive === 'boolean') {
+        caseSensitive = options.caseSensitive
+        log(`set option caseSensitive to ${options.caseSensitive.toString()}`, 'log')
+      } else {
+        log(`set option caseSensitive has to be boolean`, 'error')
         return false
       }
     }
