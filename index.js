@@ -1,3 +1,3 @@
-const tito = require('./src/tito')
+const titojs = require('./src/tito')
 
-module.exports = tito
+module.exports = titojs

@@ -1,5 +1,5 @@
 {
-  "name": "tito",
+  "name": "titojs",
   "version": "1.0.0",
   "description": "text-in-text-out is a library to process input text and return a text answer acoording to the rules it was configured with.",
   "main": "index.js",
