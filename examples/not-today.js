@@ -7,7 +7,7 @@
  * In your node script you will install
  * this as a package, so the lane you
  * have to use is:
- * const tito = require('tito')
+ * const tito = require('titojs')
  */
 const tito = require('../src/tito')
 
