@@ -1,17 +1,29 @@
 /**
- *
+ * Tito - Text in text out
  */
 const tito = (function () {
+  // Properties:
   let rules = []
   let responseFormat = 'array'
   let validLogLevels = ['log', 'warn', 'error']
 
+  /**
+   * Prints a console output with text provided, using
+   * the log level provided
+   * @param {string} text
+   * @param {string} level
+   */
   function log (text, level = 'log') {
     if (validLogLevels.indexOf(level) !== -1 && typeof text === 'string' && text.length) {
       console[level](`[tito.js] ${text}`)
     }
   }
 
+  /**
+   * Sets rules with the provided rules array if passes validation
+   * @param {array} rulesArray
+   * @return {boolean}
+   */
   function initialize (rulesArray) {
     if (!Array.isArray(rulesArray) || !rulesArray.length) {
       log('config object is not an array, or has length 0', 'error')
@@ -67,8 +79,10 @@ const tito = (function () {
   }
 
   /**
-   *
+   * Process provided text and return an array or object
+   * with error and response
    * @param {*} text
+   * @return {object, array} response
    */
   function process (text) {
     const error = checkProcessInput(text)
@@ -100,8 +114,9 @@ const tito = (function () {
   }
 
   /**
-   *
+   * Checks if provided text matches provided rule
    * @param {*} inRule
+   * @return {boolean} matches
    */
   function inRuleMatches (inRule, text) {
     let matches = false
@@ -153,10 +168,18 @@ const tito = (function () {
     }
   }
 
+  /**
+   * Return object with current configured rules
+   * @return {object} rules
+   */
   function getRules () {
     return rules
   }
 
+  /**
+   * Returns object with options data
+   * @return {object} options
+   */
   function getOptions () {
     return { responseFormat }
   }
@@ -184,6 +207,7 @@ const tito = (function () {
     return true
   }
 
+  // Public api:
   return {
     initialize,
     process,
