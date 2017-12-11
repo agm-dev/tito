@@ -94,7 +94,8 @@ const tito = (function () {
       }
     }
 
-    // TODO: return response in format acoording to the options
+    if (responseFormat === 'object') return { error: error, response: response }
+    // returnFormat === 'array' by default:
     return [error, response]
   }
 

@@ -127,3 +127,12 @@ test('setOptions only accepts (return true) object with valid options as propert
   t.true(tito.setOptions({ responseFormat: 'array' }))
   t.true(tito.setOptions({ responseFormat: 'object' }))
 })
+
+test('process method returns an object response when responseFormat === "object"', t => {
+  tito.setOptions({ responseFormat: 'object' })
+  const result = tito.process('test')
+  t.true(result.hasOwnProperty('error'))
+  t.true(result.hasOwnProperty('response'))
+  t.true(result.error === null)
+  t.true(result.response === testRules[0].out)
+})
